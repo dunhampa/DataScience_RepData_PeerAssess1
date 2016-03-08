@@ -153,10 +153,12 @@ This shows a small subset of filled data.
 
 ```r
 library(ggplot2)
+
+#RawDataActivity with set marked as missing to show it has not been filled
 ByDateMissing<-aggregate(list(Steps=RawActivityData$steps),list(Date=RawActivityData$date),sum)
 ByDateMissing$set<-'missing'
 
-
+#Filled DataActivity had NA data filled with mean of interval
 ByDateFilled<-aggregate(list(Steps=FilledActivityData$steps),list(Date=FilledActivityData$date),sum)
 ByDateFilled$set<-'filled'
 
@@ -167,6 +169,89 @@ ggplot(compare, aes(Steps, fill = set)) + geom_histogram(alpha = 0.5, aes(y = ..
 
 ![](PA1_submit_files/figure-html/unnamed-chunk-12-1.png)
 
+What is mean total number of steps taken per day?
 
+
+```r
+mean(ByDateFilled$Steps, na.rm=TRUE)
+```
+
+```
+## [1] 10749.77
+```
+
+This number is different from omitted NA data by:
+
+```r
+mean(ByDateFilled$Steps, na.rm=TRUE)-mean(ByDateMissing$Steps, na.rm=TRUE)
+```
+
+```
+## [1] -16.41819
+```
+
+
+What is the median number of steps taken per day?
+
+
+```r
+median(ByDateFilled$Steps, na.rm=TRUE)
+```
+
+```
+## [1] 10641
+```
+
+This number is different from omitted NA data by:
+
+```r
+median(ByDateFilled$Steps, na.rm=TRUE)-median(ByDateMissing$Steps, na.rm=TRUE)
+```
+
+```
+## [1] -124
+```
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+```r
+library(dplyr)
+library(lattice)
+
+#Function to tag a date as a "weekend" or "weekday"
+daytype<-function(daystring)
+{
+  weekend<-c("Saturday","Sunday")
+  ifelse(is.element(as.character(daystring),weekend),"weekend","weekday")
+}
+
+#converting date fields to "Date" data type
+ByDateFilled$Date<-as.Date(ByDateFilled$Date)
+FilledActivityData$date<-as.Date(FilledActivityData$date)
+
+DayAddedActivityData<-mutate(FilledActivityData, DayOfWeek = weekdays(FilledActivityData$date))
+
+DayAddedActivityData<-mutate(DayAddedActivityData,WeekType=daytype(DayAddedActivityData$DayOfWeek))
+
+DayCompare<-aggregate(data=DayAddedActivityData,list(Steps=DayAddedActivityData$steps),list(days=DayAddedActivityData$WeekType, interval=DayAddedActivityData$interval),na.rm=TRUE, na.action=NULL,mean)
+
+
+
+
+#for printing debug
+#weekdays(ByDateFilled$Date)
+
+#Adding a DayOfWeek column with "weekend" or "weekday" tag
+ByDateFilled<-mutate(ByDateFilled, DayOfWeek = weekdays(ByDateFilled$Date))
+
+##ByDay 
+MeanByDayOfWeek<-aggregate(list(Steps=ByDateFilled$Steps),list(Days=ByDateFilled$DayOfWeek),na.rm=TRUE, na.action=NULL,mean)
+
+DataWithDayType<-mutate(ByDateFilled, WeekType=daytype(ByDateFilled$DayOfWeek))
+
+
+
+xyplot(Steps ~ interval | days, type="l",data = DayCompare, layout = c(1, 2))
+```
+
+![](PA1_submit_files/figure-html/unnamed-chunk-17-1.png)
