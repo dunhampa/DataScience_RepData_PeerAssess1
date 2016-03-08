@@ -1,5 +1,7 @@
 ---
 title: "Reproducible Research: Peer Assessment 1"
+author: "Peter Dunham"
+date: "February 22, 2016"
 output: 
   html_document:
     keep_md: true
@@ -7,6 +9,26 @@ output:
 
 
 ## Loading and preprocessing the data
+
+The raw data "activity.csv"  to be included in the GitHub repo.  The file can also be downloaded from:  https://www.coursera.org/learn/reproducible-research/peer/gYyPt/course-project-1
+
+Eitherway, the working directory should be set to the directory that contains "activity.csv"
+
+After setting your working directory:
+```{r}
+   #getwd('YOUR DIRECTORY PATH HERE')
+```
+
+Then you can load activity data using "read.csv"
+```{r}
+   RawActivity<-read.csv(paste0(getwd(),'/activity.csv'))
+```
+
+The following displays a small subset of the data to show how "interval" fields relate to
+5 minute intervals in a 24 hour date:
+```{r}
+   RawActivity[861:868,]
+```
 
 
 
