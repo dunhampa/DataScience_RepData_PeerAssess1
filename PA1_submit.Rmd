@@ -162,7 +162,7 @@ DayCompare<-aggregate(data=DayAddedActivityData,list(Steps=DayAddedActivityData$
 
 
 
-#for printing debug
+#foprinting debug
 #weekdays(ByDateFilled$Date)
 
 #Adding a DayOfWeek column with "weekend" or "weekday" tag
